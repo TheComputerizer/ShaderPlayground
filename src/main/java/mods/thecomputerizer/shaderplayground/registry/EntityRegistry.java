@@ -1,8 +1,6 @@
-package mods.thecomputerizer.dimhoppertweaks.registry;
+package mods.thecomputerizer.shaderplayground.registry;
 
-import mods.thecomputerizer.dimhoppertweaks.core.DHTRef;
-import mods.thecomputerizer.dimhoppertweaks.registry.entities.HomingProjectile;
-import mods.thecomputerizer.dimhoppertweaks.registry.entities.boss.EntityFinalBoss;
+import mods.thecomputerizer.shaderplayground.core.SPRef;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
@@ -22,7 +20,7 @@ public final class EntityRegistry {
         final EntityEntryBuilder<E> builder = EntityEntryBuilder.create();
         EntityEntryBuilder<E>.BuiltEntityEntry entry = (EntityEntryBuilder<E>.BuiltEntityEntry)builder.entity(entityClass)
                 .tracker(100,1,true).egg(eggColor1,eggColor2)
-                .name(name).id(DHTRef.res(name),entityIdCounter++).build();
+                .name(name).id(SPRef.res(name),entityIdCounter++).build();
         entry.addedToRegistry();
         ALL_ENTRIES.add(entry);
         return entry;

@@ -1,6 +1,6 @@
-package mods.thecomputerizer.dimhoppertweaks.registry;
+package mods.thecomputerizer.shaderplayground.registry;
 
-import mods.thecomputerizer.dimhoppertweaks.core.DHTRef;
+import mods.thecomputerizer.shaderplayground.core.SPRef;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 
@@ -15,7 +15,7 @@ public final class SoundRegistry {
     public static final SoundEvent REVERSE_BELL = makeSoundEvent("reversebell");
 
     private static SoundEvent makeSoundEvent(final String name) {
-        ResourceLocation id = DHTRef.res(name);
+        ResourceLocation id = SPRef.res(name);
         SoundEvent sound = new SoundEvent(id).setRegistryName(name);
         ALL_SOUNDS.add(sound);
         return sound;

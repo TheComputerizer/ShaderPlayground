@@ -1,9 +1,7 @@
-package mods.thecomputerizer.dimhoppertweaks.registry;
+package mods.thecomputerizer.shaderplayground.registry;
 
-import mods.thecomputerizer.dimhoppertweaks.core.DHTRef;
-import mods.thecomputerizer.dimhoppertweaks.registry.blocks.LightningEnhancer;
+import mods.thecomputerizer.shaderplayground.core.SPRef;
 import net.minecraft.block.Block;
-import net.minecraft.creativetab.CreativeTabs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +16,8 @@ public final class BlockRegistry {
     private static Block makeBlock(final String name, final Supplier<Block> constructor, final Consumer<Block> config) {
         final Block block = constructor.get();
         config.accept(block);
-        block.setRegistryName(DHTRef.MODID, name);
-        block.setTranslationKey(DHTRef.MODID+"."+name);
+        block.setRegistryName(SPRef.MODID, name);
+        block.setTranslationKey(SPRef.MODID+"."+name);
         ALL_BLOCKS.add(block);
         return block;
     }

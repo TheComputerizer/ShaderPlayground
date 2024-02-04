@@ -1,4 +1,4 @@
-package mods.thecomputerizer.dimhoppertweaks.core;
+package mods.thecomputerizer.shaderplayground.core;
 
 import zone.rong.mixinbooter.ILateMixinLoader;
 
@@ -10,6 +10,6 @@ public class LateMixinLoader implements ILateMixinLoader {
 
     @Override
     public List<String> getMixinConfigs() {
-        return Collections.singletonList(DHTRef.modID("mixins.%s_mods.json"));
+        return Collections.emptyList();
     }
 }

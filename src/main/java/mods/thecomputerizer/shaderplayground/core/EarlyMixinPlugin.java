@@ -1,22 +1,23 @@
-package mods.thecomputerizer.dimhoppertweaks.core;
+package mods.thecomputerizer.shaderplayground.core;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import zone.rong.mixinbooter.IEarlyMixinLoader;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class EarlyMixinPlugin implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     static {
-        DHTRef.LOGGER.info("Initializing early mixin twinkies... I mean tweaks");
+        SPRef.LOGGER.info("Starting to play with shaders... wait what?");
     }
 
     @Override
     public List<String> getMixinConfigs() {
-        return Arrays.asList(DHTRef.modIDs("mixins.%s_vanilla.json","mixins.%s_forge.json"));
+        return Collections.emptyList();
     }
 
     @Override

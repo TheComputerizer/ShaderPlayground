@@ -25,7 +25,7 @@ java.toolchain.getLanguageVersion().set(JavaLanguageVersion.of(8))
 
 minecraft {
     mappings channel: 'stable', version: mappings_version
-    accessTransformer = file('src/main/resources/META-INF/dimhoppertweaks_at.cfg')
+    accessTransformer = file('src/main/resources/META-INF/shaderplayground_at.cfg')
     runs {
         def args = [
                 '-Dmixin.debug.export=true',
@@ -71,6 +71,8 @@ dependencies {
         transitive = false
     }
 
+    //implemented stuff
+    implementation(fg.deobf("curse.maven:the-impossible-library-661115:${project.til_version}"))
     implementation("zone.rong:mixinbooter:${project.mixinbooter_version}") {
         transitive = false
     }
