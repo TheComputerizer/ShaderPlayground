@@ -1,0 +1,12 @@
+{
+  "bell": {
+    "sounds": [ 
+      "shaderplayground:bell"
+    ]
+  },
+  "reverse": {
+    "sounds": [
+      "shaderplayground:reversebell"
+    ]
+  }
+}

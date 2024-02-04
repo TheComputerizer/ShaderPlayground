@@ -1,0 +1,14 @@
+[
+  {
+    "modid": "shaderplayground",
+    "name": "Shader Playground",
+    "description": "Just a small project for playing around with and testing shader stuff",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "no",
+    "authorList": ["The_Computerizer"],
+    "credits": "The_Computerizer",
+    "logoFile": "logo.png",
+    "dependencies": []
+  }
+]
