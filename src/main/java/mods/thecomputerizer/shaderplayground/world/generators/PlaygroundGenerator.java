@@ -10,7 +10,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
@@ -30,7 +29,7 @@ public class PlaygroundGenerator implements IChunkGenerator {
         this.rand = new Random();
     }
 
-    @Nonnull
+    @Override
     public Chunk generateChunk(int x, int z) {
         this.rand.setSeed(this.world.getSeed()+(long)x*341873128712L+(long)z*132897987541L);
         ChunkPrimer primer = new ChunkPrimer();
@@ -41,24 +40,29 @@ public class PlaygroundGenerator implements IChunkGenerator {
         return new Chunk(this.world, primer,x,z);
     }
 
+    @Override
     public void populate(int x, int z) {}
 
+    @Override
     public boolean generateStructures(Chunk chunk, int x, int z) {
         return false;
     }
 
+    @Override
     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType type, BlockPos pos) {
         Biome biome = this.world.getBiome(pos);
         return biome.getSpawnableList(type);
     }
 
+    @Override
     public @Nullable BlockPos getNearestStructurePos(World world, String structureName, BlockPos pos, boolean findUnexplored) {
         return null;
     }
 
-    public void recreateStructures(Chunk chunk, int x, int z) {
-    }
+    @Override
+    public void recreateStructures(Chunk chunk, int x, int z) {}
 
+    @Override
     public boolean isInsideStructure(World world, String structureName, BlockPos pos) {
         return false;
     }

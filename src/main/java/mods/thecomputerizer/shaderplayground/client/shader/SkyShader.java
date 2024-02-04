@@ -1,6 +1,7 @@
 package mods.thecomputerizer.shaderplayground.client.shader;
 
 import mods.thecomputerizer.shaderplayground.core.SPRef;
+import mods.thecomputerizer.shaderplayground.registry.DimensionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 
@@ -22,7 +23,7 @@ public class SkyShader extends Shader {
 
     @Override
     public boolean canRender(@Nullable WorldClient world) {
-        return Objects.nonNull(world) && world.provider.getDimension()==2;
+        return Objects.nonNull(world) && world.provider.getDimensionType()==DimensionRegistry.PLAYGROUND;
     }
 
     public float getXOffSet() {

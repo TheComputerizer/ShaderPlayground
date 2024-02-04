@@ -16,18 +16,22 @@ public class PlaygroundType extends WorldType {
         this.biomes = new BiomeProviderSingle(BiomeRegistry.PLAYGROUND);
     }
 
+    @Override
     public BiomeProvider getBiomeProvider(World world) {
         return this.biomes;
     }
 
+    @Override
     public boolean canBeCreated() {
         return false;
     }
 
+    @Override
     public IChunkGenerator getChunkGenerator(World world, String generatorOptions) {
         return new PlaygroundGenerator(world);
     }
 
+    @Override
     public float getCloudHeight() {
         return 1f;
     }

@@ -78,9 +78,12 @@ dependencies {
     }
 
     //runtime stuff and libraries
+    runtimeOnly(fg.deobf("curse.maven:brandons-core-231382:${project.bc_version}"))
     runtimeOnly(fg.deobf("curse.maven:bookshelf-228525:${project.bookshelf_version}"))
     runtimeOnly(fg.deobf("curse.maven:caliper-266824:${project.caliper_version}"))
+    runtimeOnly(fg.deobf("curse.maven:codechicken-lib-242818:${project.ccl_version}"))
     runtimeOnly(fg.deobf("curse.maven:had-enough-items-557549:${project.hei_version}"))
+    runtimeOnly(fg.deobf("curse.maven:redstone-flux-270789:${project.rf_version}"))
     runtimeOnly(fg.deobf("curse.maven:the-one-probe-245211:${project.top_version}"))
 }
 
