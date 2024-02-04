@@ -32,7 +32,6 @@ public abstract class Shader {
         this.uniforms = new ArrayList<>();
         this.fragmentLocation = fragmentLocation;
         this.vertexLocation = vertexLocation;
-        this.programID = -1;
     }
 
     protected void addUniform(Uniform<?> uniform) {
@@ -63,7 +62,7 @@ public abstract class Shader {
     }
 
     public void delete() {
-        if(this.programID!=-1) OpenGlHelper.glDeleteProgram(this.programID);
+        if(this.programID!=0) OpenGlHelper.glDeleteProgram(this.programID);
     }
 
     public ResourceLocation getFragmentLocation() {
@@ -71,7 +70,7 @@ public abstract class Shader {
     }
 
     public int getProgramID() {
-        if(this.programID==-1) {
+        if(this.programID==0) {
             this.programID = ARBShaderObjects.glCreateProgramObjectARB();
             this.vertexID = ShaderManager.getInstance().createShader(this.vertexLocation,ARBVertexShader.GL_VERTEX_SHADER_ARB);
             this.fragmentID = ShaderManager.getInstance().createShader(this.fragmentLocation,ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
@@ -94,7 +93,8 @@ public abstract class Shader {
             if(OpenGlHelper.glGetProgrami(this.programID,ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB)==GL11.GL_FALSE)
                 throw new IllegalArgumentException("Failed to link shader (2)");
         } catch(Exception ex) {
-            SPRef.LOGGER.error("Failed to validate shader from resources {} {}!",this.vertexLocation,this.fragmentLocation);
+            SPRef.LOGGER.error("Failed to validate shader from resources {} {}!",this.vertexLocation,this.fragmentLocation,ex);
+            if(this.programID!=0) OpenGlHelper.glDeleteShader(this.programID);
         }
     }
 
@@ -107,7 +107,7 @@ public abstract class Shader {
     }
 
     public void init() {
-        if(this.programID!=-1) return;
+        if(this.programID!=0) return;
         ShaderManager.getInstance().allocateUniforms(getProgramID(),this.uniforms);
     }
 

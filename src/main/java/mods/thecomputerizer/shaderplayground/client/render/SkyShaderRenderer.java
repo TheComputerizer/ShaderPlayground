@@ -30,6 +30,7 @@ public class SkyShaderRenderer extends IRenderHandler {
     @Override
     public void render(float partialTicks, WorldClient world, Minecraft mc) {
         this.shaderUser.accept(partialTicks);
+        mc.getTextureManager().bindTexture(END_SKY_TEXTURES);
         renderSky(partialTicks,mc);
         this.shaderReleaser.accept(partialTicks);
     }
@@ -41,7 +42,6 @@ public class SkyShaderRenderer extends IRenderHandler {
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderHelper.disableStandardItemLighting();
         GlStateManager.depthMask(false);
-        mc.getTextureManager().bindTexture(END_SKY_TEXTURES);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
         for(int k1 = 0; k1 < 6; ++k1) {

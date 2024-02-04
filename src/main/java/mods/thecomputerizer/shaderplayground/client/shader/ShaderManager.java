@@ -47,8 +47,9 @@ public class ShaderManager implements ISelectiveResourceReloadListener {
     }
 
     public int createShader(ResourceLocation shaderLocation, int shaderType) {
+        int shaderID = 0;
         try {
-            int shaderID = OpenGlHelper.glCreateShader(shaderType);
+            shaderID = OpenGlHelper.glCreateShader(shaderType);
             if(shaderID==0) throw new IllegalArgumentException("Unknown shader type "+shaderType);
             byte[] shaderBytes = getResourceAsString(Minecraft.getMinecraft().getResourceManager(),shaderLocation).getBytes();
             ByteBuffer shaderBuffer = BufferUtils.createByteBuffer(shaderBytes.length);
@@ -58,7 +59,8 @@ public class ShaderManager implements ISelectiveResourceReloadListener {
             OpenGlHelper.glCompileShader(shaderID);
             return shaderID;
         } catch(Exception ex) {
-            SPRef.LOGGER.error("Failed to create shader from resource {}!",shaderLocation);
+            SPRef.LOGGER.error("Failed to create shader from resource {}!",shaderLocation,ex);
+            if(shaderID!=0) OpenGlHelper.glDeleteShader(shaderID);
         }
         return 0;
     }

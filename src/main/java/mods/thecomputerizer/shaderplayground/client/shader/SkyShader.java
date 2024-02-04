@@ -4,34 +4,24 @@ import mods.thecomputerizer.shaderplayground.core.SPRef;
 import mods.thecomputerizer.shaderplayground.registry.DimensionRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
+import org.lwjgl.BufferUtils;
 
 import javax.annotation.Nullable;
+import java.nio.FloatBuffer;
 import java.util.Objects;
 
 public class SkyShader extends Shader {
 
-
     public SkyShader() {
         super(SPRef.res("shaders/sky/skytest.fsh"),SPRef.res("shaders/sky/skytest.vsh"));
-        addUniformFloat("millis",() -> System.nanoTime()/1000000f);
-        addUniformFloat("timeScale",() -> 2.5E-7f);
-        addUniformFloat("zoom",() -> 0.8f);
-        addUniformFloat("offsetX",this::getXOffSet);
-        addUniformFloat("offsetY",this::getYOffSet);
-        addUniformFloat("offsetZ",() -> 0f);
+        addUniformFloat("millis",() -> (float)System.nanoTime()/1000000f);
+        addUniformFloat("width",() -> (float)Minecraft.getMinecraft().displayWidth);
+        addUniformFloat("height",() -> (float)Minecraft.getMinecraft().displayHeight);
     }
 
     @Override
     public boolean canRender(@Nullable WorldClient world) {
         return Objects.nonNull(world) && world.provider.getDimensionType()==DimensionRegistry.PLAYGROUND;
-    }
-
-    public float getXOffSet() {
-        return (float)(Minecraft.getMinecraft().getRenderManager().viewerPosX/8000d);
-    }
-
-    public float getYOffSet() {
-        return (float)(Minecraft.getMinecraft().getRenderManager().viewerPosY/8000d);
     }
 
     @Override
