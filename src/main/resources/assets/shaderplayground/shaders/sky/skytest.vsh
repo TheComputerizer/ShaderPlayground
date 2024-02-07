@@ -1,6 +1,6 @@
 #version 330 compatibility
 
-const vec4 DEFAULT_COLOR = vec4(1f,1f,1f,1f);
+const vec4 DEFAULT_COLOR = vec4(1.0,1.0,1.0,1.0);
 
 out vec4 vColor;
 out vec2 vTexCoord;

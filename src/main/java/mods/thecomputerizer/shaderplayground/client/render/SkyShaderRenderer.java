@@ -52,10 +52,10 @@ public class SkyShaderRenderer extends IRenderHandler {
             else if(k1==4) GlStateManager.rotate(90f,0f,0f,1f);
             else if(k1==5) GlStateManager.rotate(-90f,0f,0f,1f);
             buffer.begin(GL11.GL_QUADS,DefaultVertexFormats.POSITION_TEX_COLOR);
-            buffer.pos(-100d,-100d,-100d).tex(0d,0d).color(40,40,40,255).endVertex();
-            buffer.pos(-100d,-100d,100d).tex(0d,16d).color(40,40,40,255).endVertex();
-            buffer.pos(100d,-100d,100d).tex(16d,16d).color(40,40,40,255).endVertex();
-            buffer.pos(100d,-100d,-100d).tex(16d,0d).color(40,40,40,255).endVertex();
+            buffer.pos(-100d,-100d,-100d).tex(0d,0d).color(0.157f,0.157f,0.157f,1f).endVertex();
+            buffer.pos(-100d,-100d,100d).tex(0d,16d).color(0.157f,0.157f,0.157f,1f).endVertex();
+            buffer.pos(100d,-100d,100d).tex(16d,16d).color(0.157f,0.157f,0.157f,1f).endVertex();
+            buffer.pos(100d,-100d,-100d).tex(16d,0d).color(0.157f,0.157f,0.157f,1f).endVertex();
             tessellator.draw();
             GlStateManager.popMatrix();
         }

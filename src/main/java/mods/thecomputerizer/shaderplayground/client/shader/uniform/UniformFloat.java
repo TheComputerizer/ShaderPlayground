@@ -1,31 +1,20 @@
 package mods.thecomputerizer.shaderplayground.client.shader.uniform;
 
-import net.minecraft.client.renderer.GLAllocation;
-import net.minecraft.client.renderer.OpenGlHelper;
+import mods.thecomputerizer.shaderplayground.client.shader.ShaderManager;
 
-import java.nio.FloatBuffer;
-import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class UniformFloat extends Uniform<Float> {
 
-    private final int size;
-    private final FloatBuffer buffer;
-    private final BiConsumer<FloatBuffer,Float> bufferFunc;
+    private final Function<Float,Float> valFunc;
 
-    public UniformFloat(String name, int size, BiConsumer<FloatBuffer,Float> bufferFunc, float ... defaults) {
+    public UniformFloat(String name, Function<Float,Float> valFunc) {
         super(name);
-        this.size = size;
-        this.buffer = GLAllocation.createDirectFloatBuffer(size);
-        this.buffer.put(defaults);
-        this.bufferFunc = bufferFunc;
+        this.valFunc = valFunc;
     }
 
     @Override
-    public void upload(float partialTicks) {
-        this.bufferFunc.accept(this.buffer,partialTicks);
-        if(this.size==1) OpenGlHelper.glUniform1(getID(),this.buffer);
-        else if(this.size==2) OpenGlHelper.glUniform2(getID(),this.buffer);
-        else if(this.size==3) OpenGlHelper.glUniform3(getID(),this.buffer);
-        else OpenGlHelper.glUniform4(getID(),this.buffer);
+    public void upload(float partialTicks, int programID) {
+        ShaderManager.getInstance().uploadFloat(programID,getName(),this.valFunc.apply(partialTicks));
     }
 }

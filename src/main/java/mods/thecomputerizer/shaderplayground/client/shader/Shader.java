@@ -1,9 +1,6 @@
 package mods.thecomputerizer.shaderplayground.client.shader;
 
 import mods.thecomputerizer.shaderplayground.client.shader.uniform.Uniform;
-import mods.thecomputerizer.shaderplayground.client.shader.uniform.UniformFloat;
-import mods.thecomputerizer.shaderplayground.client.shader.uniform.UniformInt;
-import mods.thecomputerizer.shaderplayground.client.shader.uniform.UniformMatrix;
 import mods.thecomputerizer.shaderplayground.core.SPRef;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,11 +9,9 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.*;
 
 import javax.annotation.Nullable;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Supplier;
 
 public abstract class Shader {
 
@@ -36,25 +31,6 @@ public abstract class Shader {
 
     protected void addUniform(Uniform<?> uniform) {
         this.uniforms.add(uniform);
-    }
-
-    protected void addUniformFloat(String name, Supplier<Float> valSupplier) {
-        addUniform(new UniformFloat(name,1,(buffer, partialTicks) ->
-                ShaderManager.getInstance().uploadFloats(buffer,valSupplier.get())));
-    }
-
-    protected void addUniformFloatBuffer(String name, int size, Supplier<FloatBuffer> valSupplier) {
-        addUniform(new UniformFloat(name,size,(buffer,partialTicks) ->
-                ShaderManager.getInstance().uploadFloatBuffer(buffer,valSupplier.get())));
-    }
-
-    protected void addUniformInt(String name, Supplier<Integer> valSupplier) {
-        addUniform(new UniformInt(name,1,(buffer, partialTicks) ->
-                ShaderManager.getInstance().uploadInts(buffer,valSupplier.get())));
-    }
-
-    protected void addUniformMatrix(String name, Supplier<FloatBuffer> valSupplier) {
-        addUniform(new UniformMatrix(name, pt -> valSupplier.get()));
     }
 
     public boolean canRender(@Nullable WorldClient world) {
@@ -119,7 +95,7 @@ public abstract class Shader {
     abstract void render(float partialTicks);
 
     public void upload(float partialTicks) {
-        ShaderManager.getInstance().uploadUniforms(partialTicks,this.uniforms);
+        ShaderManager.getInstance().uploadUniforms(partialTicks,this.programID,this.uniforms);
     }
 
     public void use(float partialTicks) {

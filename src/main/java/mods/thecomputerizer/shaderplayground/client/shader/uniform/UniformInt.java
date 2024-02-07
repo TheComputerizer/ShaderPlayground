@@ -19,7 +19,8 @@ public class UniformInt extends Uniform<Integer> {
     }
 
     @Override
-    public void upload(float partialTicks) {
+    public void upload(float partialTicks, int programID) {
+        setID(OpenGlHelper.glGetUniformLocation(programID,getName()));
         this.bufferFunc.accept(this.buffer,partialTicks);
         OpenGlHelper.glUniform1(getID(),this.buffer);
     }

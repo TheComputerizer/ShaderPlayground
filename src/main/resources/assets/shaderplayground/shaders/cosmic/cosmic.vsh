@@ -26,7 +26,6 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
  
    // Normalize the vector from surface to light position
    VP = normalize(VP);
- 
    // Compute attenuation
    attenuation = 1.0 / (gl_LightSource[i].constantAttenuation +
        gl_LightSource[i].linearAttenuation * d +

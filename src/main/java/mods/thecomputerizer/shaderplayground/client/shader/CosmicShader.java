@@ -12,8 +12,8 @@ import java.util.Objects;
 
 public class CosmicShader extends Shader {
 
-    private static final FloatBuffer LIGHT_BUFFER = createBuffer(new float[]{1f,1f,1f});
-    private static final FloatBuffer COSMIC_UV_BUFFER = createBuffer(new float[40]); //Currently does not do anything
+    //private static final FloatBuffer LIGHT_BUFFER = createBuffer(new float[]{1f,1f,1f});
+    //private static final FloatBuffer COSMIC_UV_BUFFER = createBuffer(new float[40]); //Currently does not do anything
 
     private static FloatBuffer createBuffer(float[] defVals) {
         FloatBuffer buffer = BufferUtils.createFloatBuffer(defVals.length);
@@ -24,15 +24,6 @@ public class CosmicShader extends Shader {
 
     public CosmicShader() {
         super(SPRef.res("shaders/cosmic/cosmic.fsh"),SPRef.res("shaders/cosmic/cosmic.vsh"));
-        LIGHT_BUFFER.put(new float[]{1f,1f,1f});
-        addUniformInt("time",this::getTime);
-        addUniformFloat("yaw",() -> 0f);
-        addUniformFloat("pitch",() -> 0f);
-        addUniformFloatBuffer("lightlevel",3,() -> LIGHT_BUFFER);
-        addUniformFloat("lightmix",() -> 0.2f);
-        addUniformMatrix("cosmicuvs",() -> COSMIC_UV_BUFFER);
-        addUniformFloat("externalScale",() -> 1f);
-        addUniformFloat("opacity",() -> 1f);
     }
 
     @Override

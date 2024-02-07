@@ -89,9 +89,18 @@ public class ShaderManager implements ISelectiveResourceReloadListener {
         //this.cosmicShader.delete();
     }
 
-    public void uploadFloats(FloatBuffer buffer, float ... vals) {
-        buffer.position(0);
-        buffer.put(vals);
+    public void uploadFloat(int programID, String name, float val) {
+        int uniformID = ARBShaderObjects.glGetUniformLocationARB(programID,name);
+        ARBShaderObjects.glUniform1fARB(uniformID,val);
+    }
+
+    public void uploadFloats(int programID, String name, float ... vals) {
+        int uniformID = ARBShaderObjects.glGetUniformLocationARB(programID,name);
+        switch(vals.length) {
+            case 1: ARBShaderObjects.glUniform1fARB(uniformID,vals[0]);
+            case 2: ARBShaderObjects.glUniform2fARB(uniformID,vals[0],vals[1]);
+            case 3: ARBShaderObjects.glUniform3fARB(uniformID,vals[0],vals[1],vals[2]);
+        }
     }
 
     public void uploadFloatBuffer(FloatBuffer buffer, FloatBuffer otherBuffer) {
@@ -105,7 +114,7 @@ public class ShaderManager implements ISelectiveResourceReloadListener {
         buffer.put(vals);
     }
 
-    public void uploadUniforms(float partialTicks, Collection<Uniform<?>> uniforms) {
-        for(Uniform<?> uniform : uniforms) uniform.upload(partialTicks);
+    public void uploadUniforms(float partialTicks, int programID, Collection<Uniform<?>> uniforms) {
+        for(Uniform<?> uniform : uniforms) uniform.upload(partialTicks,programID);
     }
 }

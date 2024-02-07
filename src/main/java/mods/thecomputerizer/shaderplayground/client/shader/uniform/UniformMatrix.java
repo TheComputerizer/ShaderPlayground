@@ -15,7 +15,8 @@ public class UniformMatrix extends Uniform<Float> {
     }
 
     @Override
-    public void upload(float partialTicks) {
+    public void upload(float partialTicks, int programID) {
+        setID(OpenGlHelper.glGetUniformLocation(programID,getName()));
         OpenGlHelper.glUniformMatrix2(getID(),false,this.bufferFunc.apply(partialTicks));
     }
 }

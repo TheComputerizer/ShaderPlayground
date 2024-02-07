@@ -1,5 +1,6 @@
 package mods.thecomputerizer.shaderplayground.client.shader.uniform;
 
+
 public abstract class Uniform<U> {
 
     private final String name;
@@ -21,5 +22,5 @@ public abstract class Uniform<U> {
         this.uniformID = id;
     }
 
-    public abstract void upload(float partialTicks);
+    public abstract void upload(float partialTicks, int programID);
 }
