@@ -1,7 +1,7 @@
 #version 330 compatibility
 
-const float RADIUS = 12;
-const float SOFTNESS = 7.2;
+const float RADIUS = 5;
+const float SOFTNESS = 3;
 const vec3 SEPIA = vec3(1.2,1.0,0.8);
 
 uniform sampler2D texture;
@@ -10,10 +10,6 @@ uniform float time;
 
 in vec4 vColor;
 in vec2 vTexCoord;
-
-float getTimeFactor(float original) {
-    return original+time;
-}
 
 float flash(vec2 seed) {
     return abs(sin(time));
@@ -57,19 +53,27 @@ float fbm(vec2 seed) {
     return v;
 }
 
+vec4 applyVignette(vec4 brownian, vec4 texColor) {
+    vec2 center = vTexCoord.xy-vec2(8.0);
+    float len = length(center);
+    float vignette = smoothstep(RADIUS,RADIUS-SOFTNESS,len);
+    return vec4(mix(texColor.rgb,brownian.rgb,vignette),1.0);
+}
+
 void main() {
     vec4 texColor = texture2D(texture,vTexCoord);
     vec2 position = vTexCoord.xy/16.0*3.0;
-    position += position * abs(sin(time*0.1)*3.0);
+    float timeFactor = time/15.0;
+    //position += position * abs(sin(time*0.1)*3.0);
     vec3 color = vec3(0.0);
 
     vec2 q = vec2(0.);
-    q.x = fbm( position + 0.00*time);
+    q.x = fbm( position + 0.00*timeFactor);
     q.y = fbm( position + vec2(1.0));
 
     vec2 r = vec2(0.);
-    r.x = fbm( position + 1.0*q + vec2(1.7,9.2)+ 0.15*time );
-    r.y = fbm( position + 1.0*q + vec2(8.3,2.8)+ 0.126*time);
+    r.x = fbm( position + 1.0*q + vec2(1.7,9.2)+ 0.15*timeFactor );
+    r.y = fbm( position + 1.0*q + vec2(8.3,2.8)+ 0.126*timeFactor);
 
     float f = fbm(position+r);
 
@@ -79,9 +83,9 @@ void main() {
 
     color = mix(color, vec3(0.666667,1,1), clamp(length(r.x),0.0,1.0));
 
-    color = mix(color,texColor.rgb,texColor.a*0.75);
+    vec4 brownian = vec4((f*f*f+.6*f*f+.5*f)*color*0.75,1.);
 
-    gl_FragColor = vec4((f*f*f+.6*f*f+.5*f)*color,1.);
+    gl_FragColor = applyVignette(brownian,texColor);
 }
 
 /*
