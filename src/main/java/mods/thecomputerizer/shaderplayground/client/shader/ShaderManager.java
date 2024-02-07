@@ -11,6 +11,8 @@ import net.minecraftforge.client.resource.IResourceType;
 import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.GL20;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
@@ -74,6 +76,11 @@ public class ShaderManager implements ISelectiveResourceReloadListener {
     public void initShaderFrame(WorldClient world) {
         if(this.skyShader.canRender(world)) this.skyShader.init();
         //if(this.cosmicShader.canRender(world)) this.cosmicShader.init();
+    }
+
+    public String logShaderError(int program, String baseMsg) {
+        int length = GL20.glGetProgrami(program,ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB);
+        return baseMsg+" `"+GL20.glGetProgramInfoLog(program,length)+"1";
     }
 
     @Override

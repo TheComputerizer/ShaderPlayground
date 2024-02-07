@@ -87,11 +87,11 @@ public abstract class Shader {
 
     private void validateShaderProgram() {
         try {
-            if (OpenGlHelper.glGetProgrami(this.programID,ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB)==GL11.GL_FALSE)
-                throw new IllegalArgumentException("Failed to link shader (1)");
+            if(OpenGlHelper.glGetProgrami(this.programID,ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB)==GL11.GL_FALSE)
+                throw new IllegalArgumentException(ShaderManager.getInstance().logShaderError(this.programID,"Failed to link shader!"));
             GL20.glValidateProgram(this.programID);
             if(OpenGlHelper.glGetProgrami(this.programID,ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB)==GL11.GL_FALSE)
-                throw new IllegalArgumentException("Failed to link shader (2)");
+                throw new IllegalArgumentException(ShaderManager.getInstance().logShaderError(this.programID,"Failed to validate shader!"));
         } catch(Exception ex) {
             SPRef.LOGGER.error("Failed to validate shader from resources {} {}!",this.vertexLocation,this.fragmentLocation,ex);
             if(this.programID!=0) OpenGlHelper.glDeleteShader(this.programID);

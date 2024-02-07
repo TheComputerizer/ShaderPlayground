@@ -1,25 +1,40 @@
-#version 120
+#version 330 compatibility
+
+const float RADIUS = 0.75f;
+const float SOFTNESS = 0.45f;
+const vec3 SEPIA = vec3(1.2f,1f,0.8f);
 
 uniform sampler2D texture;
 
-uniform float millis;
+uniform float time;
 uniform float width;
 uniform float height;
 
+in vec4 vColor;
+in vec2 vTexCoord;
+
 float getTimeFactor(float original) {
-    return original+(millis/50f);
+    return original+time;
 }
 
-float flash() {
-    return fract(abs(sin(millis/50f)));
+float flash(vec2 seed) {
+    return abs(sin(time));
 }
 
-float random (in vec2 _st) {
-    return fract(sin(dot(_st.xy,vec2(12.9898,78.233)))*43758.5453123);
+float random(vec2 seed) {
+    return abs(noise1(seed.x));
 }
 
 void main() {
-    vec4 mask = texture2D(texture,gl_TexCoord[0].xy);
-    //vec2 coord = gl_FragCoord.xy/vec2(width,height);
-    gl_FragColor = vec4(mask.xyz,random(gl_FragCoord.xy));
+    vec4 texColor = texture2D(texture,vTexCoord);
+    vec2 resolution = vec2(width,height);
+    vec2 position = (gl_FragCoord.xy/resolution.xy)-vec2(0.5f);
+    float len = length(position);
+    float vignette = smoothstep(RADIUS,RADIUS-SOFTNESS,len);
+    texColor.rgb = mix(texColor.rgb,texColor.rgb*vignette,0.5f);
+    float flashFactor = flash(position);
+    float gray = dot(texColor.rgb, vec3(0.299f,0.587f,flashFactor));
+    vec3 sepiaColor = vec3(gray)*SEPIA;
+    texColor.rgb = mix(texColor.rgb,sepiaColor,0.75f);
+    gl_FragColor = vec4(texColor.rgb,1f);
 }
