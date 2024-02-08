@@ -2,6 +2,7 @@ package mods.thecomputerizer.shaderplayground.world.providers;
 
 import mods.thecomputerizer.shaderplayground.client.render.SkyShaderRenderer;
 import mods.thecomputerizer.shaderplayground.client.shader.ShaderManager;
+import mods.thecomputerizer.shaderplayground.core.SPRef;
 import mods.thecomputerizer.shaderplayground.registry.BiomeRegistry;
 import mods.thecomputerizer.shaderplayground.registry.DimensionRegistry;
 import mods.thecomputerizer.shaderplayground.world.generators.PlaygroundGenerator;
@@ -33,6 +34,11 @@ public class PlaygroundProvider extends WorldProvider {
     protected void init() {
         super.init();
         this.hasSkyLight = false;
+        if(SPRef.CLIENT) initClient();
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void initClient() {
         this.setSkyRenderer(new SkyShaderRenderer(pt -> ShaderManager.getInstance().skyShader.use(pt)
                 ,pt -> ShaderManager.getInstance().skyShader.release()));
     }

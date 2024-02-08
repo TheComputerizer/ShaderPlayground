@@ -1,10 +1,13 @@
 package mods.thecomputerizer.shaderplayground.client.shader.uniform;
 
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.nio.FloatBuffer;
 import java.util.function.Function;
 
+@SideOnly(Side.CLIENT)
 public class UniformMatrix extends Uniform<Float> {
 
     private final Function<Float,FloatBuffer> bufferFunc;

@@ -2,10 +2,13 @@ package mods.thecomputerizer.shaderplayground.client.shader.uniform;
 
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.nio.IntBuffer;
 import java.util.function.BiConsumer;
 
+@SideOnly(Side.CLIENT)
 public class UniformInt extends Uniform<Integer> {
 
     private final IntBuffer buffer;

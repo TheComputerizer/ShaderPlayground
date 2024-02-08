@@ -9,11 +9,13 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.resource.IResourceType;
 import net.minecraftforge.client.resource.ISelectiveResourceReloadListener;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,13 +27,68 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 @ParametersAreNonnullByDefault
+@SideOnly(Side.CLIENT)
 public class ShaderManager implements ISelectiveResourceReloadListener {
 
+    private static final int FRAGMENT_ARB = ARBFragmentShader.GL_FRAGMENT_SHADER_ARB;
+    private static final int LINK_STATUS = ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB;
+    private static final int LOG_LENGTH = ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB;
+    private static final int VALIDATE_STATUS = ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB;
+    private static final int VERTEX_ARB = ARBVertexShader.GL_VERTEX_SHADER_ARB;
     private static ShaderManager INSTANCE;
+
+    public static String getShaderError(int programID, String baseMsg) {
+        int length = GL20.glGetProgrami(programID,LOG_LENGTH);
+        return baseMsg+" `"+GL20.glGetProgramInfoLog(programID,length)+"`";
+    }
 
     public static ShaderManager getInstance() {
         if(Objects.isNull(INSTANCE)) new ShaderManager();
         return INSTANCE;
+    }
+
+    public static int initShaderProgram(@Nullable ResourceLocation fragmentRes, @Nullable ResourceLocation vertexRes) {
+        if(Objects.isNull(fragmentRes) && Objects.isNull(vertexRes)) return 0;
+        int programID = ARBShaderObjects.glCreateProgramObjectARB();
+        int vertexID = Objects.nonNull(vertexRes) ? INSTANCE.createShader(vertexRes,VERTEX_ARB) : 0;
+        int fragmentID = Objects.nonNull(fragmentRes) ? INSTANCE.createShader(fragmentRes,FRAGMENT_ARB) : 0;
+        programID = linkShaders(programID,vertexID,fragmentID);
+        OpenGlHelper.glUseProgram(0);
+        return programID;
+    }
+
+    public static int linkShaders(int programID, int ... shaderIDs) {
+        if(programID!=0) {
+            for(int shaderID : shaderIDs)
+                if(shaderID!=0) OpenGlHelper.glAttachShader(programID,shaderID);
+            OpenGlHelper.glLinkProgram(programID);
+            programID = validateLinkedShader(programID,"Shader link validation failed!");
+            for(int shaderID : shaderIDs)
+                if(shaderID!=0) OpenGlHelper.glDeleteShader(shaderID);
+        }
+        return programID;
+    }
+
+    public static int validateLinkedShader(int programID, String errorMsg) {
+        if(!validateShader(programID,LINK_STATUS,"Failed to link shader!")) {
+            SPRef.LOGGER.error("Shader link validation failed! {}",errorMsg);
+            return 0;
+        }
+        GL20.glValidateProgram(programID);
+        if(!validateShader(programID,VALIDATE_STATUS,"Failed to validate shader!")) {
+            SPRef.LOGGER.error("Shader link validation failed! {}",errorMsg);
+            return 0;
+        }
+        return programID;
+    }
+
+    public static boolean validateShader(int programID, int parameter, String errorMsg) {
+        if(OpenGlHelper.glGetProgrami(programID,parameter)==GL11.GL_FALSE) {
+            SPRef.LOGGER.error(getShaderError(programID,errorMsg));
+            OpenGlHelper.glDeleteShader(programID);
+            return false;
+        }
+        return true;
     }
 
     public final SkyShader skyShader;

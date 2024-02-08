@@ -67,15 +67,19 @@ dependencies {
     annotationProcessor("com.google.code.gson:gson:${project.gson_annotation}")
     annotationProcessor("com.google.guava:guava:${project.guava_annotation}")
     annotationProcessor("org.ow2.asm:asm-debug-all:${project.asm_debug_annotation}")
+    /*
     annotationProcessor("zone.rong:mixinbooter:${project.mixinbooter_version}") {
         transitive = false
     }
+     */
 
     //implemented stuff
     implementation(fg.deobf("curse.maven:the-impossible-library-661115:${project.til_version}"))
+    /*
     implementation("zone.rong:mixinbooter:${project.mixinbooter_version}") {
         transitive = false
     }
+     */
 
     //runtime stuff and libraries
     runtimeOnly(fg.deobf("curse.maven:brandons-core-231382:${project.bc_version}"))
@@ -107,9 +111,9 @@ mixin {
 jar {
     manifest {
         attributes([
-                'FMLCorePlugin': 'mods.thecomputerizer.shaderplayground.core.EarlyMixinPlugin',
-                'FMLCorePluginContainsFMLMod': true,
-                'ForceLoadAsMod': true,
+                //'FMLCorePlugin': 'mods.thecomputerizer.shaderplayground.core.EarlyMixinPlugin',
+                //'FMLCorePluginContainsFMLMod': true,
+                //'ForceLoadAsMod': true,
                 'FMLAT': 'shaderplayground_at.cfg'
         ])
     }
