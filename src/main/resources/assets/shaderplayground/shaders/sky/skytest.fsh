@@ -8,6 +8,7 @@
 */
 
 #define NUM_OCTAVES 5
+#define PI 3.14159265359
 
 const vec3 SEPIA = vec3(1.2,1.0,0.8);
 const vec3 OUTLINE_COLOR = vec3(0.0,0.0,0.0);
@@ -22,6 +23,7 @@ uniform sampler2D texture;
 //Equal to World#getgetWorldTime()%65536L from Minecraft#world or 1 if the world does not exist
 uniform float time;
 uniform float timeScale;
+uniform float uvScale;
 uniform float radius;
 uniform float outlineThickness;
 uniform float animationScale;
@@ -38,7 +40,7 @@ in vec2 vTexCoord;
  * Assumes the texture size is 16x16
 */
 vec2 getNormalizedPosition() {
-    return vTexCoord.xy/16.0;
+    return vTexCoord.xy*uvScale;
 }
 
 /*
@@ -95,12 +97,9 @@ float fbm(vec2 seed) {
  * Adapted from The Book of Shaders
  * https://thebookofshaders.com/13/
 */
-vec4 mainFBM(vec2 nPos) {
+vec4 mainFBM(vec2 nPos, float timeFactor) {
     //Scaled position to adjust noise
     vec2 pos = nPos*animationScale;
-
-    //Scaled time factor to adjust the animation speed
-    float timeFactor = time*timeScale;
 
     //Changes the noise type
     //pos += pos * abs(sin(timeFactor*0.1)*3.0);
@@ -138,6 +137,30 @@ float box(vec2 pos) {
     return left*bottom*right*top;
 }
 
+mat2 rotate2d(float angle) {
+    return mat2(cos(angle),-sin(angle),sin(angle),cos(angle));
+}
+
+float rotatedBox(vec2 pos, float timeFactor) {
+    pos = rotate2d(sin(timeFactor)*PI)*pos;
+    return box(pos);
+}
+
+/*
+ * Assume v.x is larger than v.y
+*/
+vec2 normalizeTo(vec2 v, float max) {
+    return vec2(max,max*(v.y/v.x));
+}
+
+float ringInterval(vec2 center, vec2 radius, float timeFactor) {
+    float len = length(center);
+    len = fract(len*20.0-timeFactor);//-fract(timeFactor);
+    float outer = 1.0-step(radius.x,len);
+    float inner = step(radius.y,len);
+    return 1.0-(outer*inner);
+}
+
 /*
  * Makes a hole from the input center position, radius, and color vectors
  * The radius vector should be (outer,inner)
@@ -164,8 +187,11 @@ void main() {
     //Center position
     vec2 cPos = nPos-vec2(0.5);
 
+    //Scaled time factor to adjust the animation speed
+    float timeFactor = time*timeScale;
+
     //Fractal Brownian Motion color output
-    vec4 brownian = mainFBM(nPos);
+    vec4 brownian = mainFBM(nPos,timeFactor);
 
     //Redii of the hole
     vec2 radii = vec2(radius+outlineThickness,radius);
@@ -174,27 +200,11 @@ void main() {
     float bBox = box(cPos);
 
     //Color for the inside of the hole
-    vec4 innerColor = vec4(brownian.rgb*bBox,brownian.a);
+    vec4 innerColor = vec4(brownian.rgb*bBox*rotatedBox(cPos,timeFactor),brownian.a);
 
     //Color for the outside of the hole
-    vec4 outerColor = texColor;
+    vec4 outerColor = texColor*ringInterval(cPos,vec2(1.0,0.5),timeFactor);
 
     //Sets the final color of the fragment
     gl_FragColor = makeHole(cPos,radii,innerColor,outerColor);
 }
-
-/*
-void main() {
-    vec4 texColor = texture2D(texture,vTexCoord);
-    vec2 resolution = vec2(width,height);
-    vec2 position = vTexCoord.xy-vec2(8.0);
-    float len = length(position);
-    float vignette = smoothstep(RADIUS,RADIUS-SOFTNESS,len);
-    texColor.rgb = mix(texColor.rgb,texColor.rgb*vignette,0.75);
-    float flashFactor = flash(position);
-    float gray = dot(texColor.rgb, vec3(0.299,0.587,flashFactor));
-    vec3 sepiaColor = vec3(gray)*SEPIA;
-    //texColor.rgb = mix(texColor.rgb,sepiaColor,0.75);
-    gl_FragColor = vec4(texColor.rgb,1.0);
-}
-*/

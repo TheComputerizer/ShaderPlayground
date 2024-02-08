@@ -18,6 +18,7 @@ public class SkyShader extends Shader {
         super(SPRef.res("shaders/sky/skytest.fsh"),SPRef.res("shaders/sky/skytest.vsh"));
         addUniform(new UniformFloat("time",this::getTime));
         addUniform(new UniformFloat("timeScale",this::getTimeScale));
+        addUniform(new UniformFloat("uvScale",this::getUVScale));
         addUniform(new UniformFloat("radius",this::getRadius));
         addUniform(new UniformFloat("outlineThickness",this::getOutlineThickness));
         addUniform(new UniformFloat("animationScale",this::getAnimationScale));
@@ -25,19 +26,23 @@ public class SkyShader extends Shader {
 
     public float getTime(float partialTicks) {
         Minecraft mc = Minecraft.getMinecraft();
-        return Objects.nonNull(mc.world) ? mc.world.getWorldTime()%65536L : 1f;
+        return Objects.nonNull(mc.world) ? (mc.world.getWorldTime()%65536L)+partialTicks : 1f;
     }
 
     public float getTimeScale(float partialTicks) {
         return 1f/15f;
     }
 
+    public float getUVScale(float partialTicks) {
+        return 1/16f;
+    }
+
     public float getRadius(float partialTicks) {
-        return 0.25f;
+        return 0.11f;
     }
 
     public float getOutlineThickness(float partialTicks) {
-        return 0.01f;
+        return 0.02f;
     }
 
     public float getAnimationScale(float partialTicks) {
