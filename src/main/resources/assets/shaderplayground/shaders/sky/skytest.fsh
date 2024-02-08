@@ -27,6 +27,8 @@ uniform float uvScale;
 uniform float radius;
 uniform float outlineThickness;
 uniform float animationScale;
+uniform float crackScale;
+
 
 /*
  * Inputs passed from the vertex shader
@@ -44,7 +46,7 @@ vec2 getNormalizedPosition() {
 }
 
 /*
- * Gets a pseudo-random float using the input vector as a seed
+ * Gets a pseudo-random float from 0-1 using the input vector as a seed
 */
 float random(vec2 seed) {
     return fract(sin(dot(seed.xy,vec2(12.9898,78.233)))*43758.5453123);
@@ -129,11 +131,11 @@ vec4 mainFBM(vec2 nPos, float timeFactor) {
 /*
  * Returns 1 if the position is in the box and 0 if it is not
 */
-float box(vec2 pos) {
-    float left = step(-0.1,pos.x);
-    float bottom = step(-0.1,pos.y);
-    float right = 1.0-step(0.1,pos.x);
-    float top = 1.0-step(0.1,pos.y);
+float box(vec2 pos, float hScale, float vScale) {
+    float left = step(-hScale,pos.x);
+    float bottom = step(-vScale,pos.y);
+    float right = 1.0-step(hScale,pos.x);
+    float top = 1.0-step(vScale,pos.y);
     return left*bottom*right*top;
 }
 
@@ -143,7 +145,7 @@ mat2 rotate2d(float angle) {
 
 float rotatedBox(vec2 pos, float timeFactor) {
     pos = rotate2d(sin(timeFactor)*PI)*pos;
-    return box(pos);
+    return box(pos,0.1,0.1);
 }
 
 /*
@@ -154,8 +156,7 @@ vec2 normalizeTo(vec2 v, float max) {
 }
 
 float ringInterval(vec2 center, vec2 radius, float timeFactor) {
-    float len = length(center);
-    len = fract(len*20.0-timeFactor);//-fract(timeFactor);
+    float len = fract(length(center)*20.0-timeFactor);
     float outer = 1.0-step(radius.x,len);
     float inner = step(radius.y,len);
     return 1.0-(outer*inner);
@@ -170,6 +171,28 @@ vec4 makeHole(vec2 center, vec2 radius, vec4 holeColor, vec4 outerColor) {
     vec3 outlinedHole = mix(holeColor.rgb,OUTLINE_COLOR.rgb,step(radius.y,len));
     return vec4(mix(outlinedHole.rgb,outerColor.rgb,step(radius.x,len)),1.0);
 }
+
+/* Crack example from shadertoy that needs testing
+float makeCrack(vec2 pos) {
+    float col=0.;
+    vec2 v = vec2(1e3);
+    for(int c=0;c<40;c++) {
+        vec2 vc=vec2(pos.x+random(vec2(float(c),2.23))*.5*cos(floor(random(vec2(float(c),4.7))*4.)*0.7854)+random(vec2(float(c),349.3))*.01,
+        pos.y+random(vec2(float(c),2.23))*.5*sin(floor(random(vec2(float(c),4.7))*4.)*0.7854)+random(vec2(float(c),912.7))*.01);
+        float d=abs(length(dot(pos-v,normalize(v-vc)))-length(dot(pos-vc,normalize(v-vc))));
+        if(d<3E-3)
+        {
+            col=clamp(2E-4/d,0.,1.);
+            break;
+        }
+        if(length(pos-vc)<length(pos-v))
+        {
+            v=vc;
+        }
+    }
+    return col;
+}
+*/
 
 /*
  * Shader entry point.
@@ -197,13 +220,13 @@ void main() {
     vec2 radii = vec2(radius+outlineThickness,radius);
 
     //Simple box
-    float bBox = box(cPos);
+    float bBox = box(cPos,0.1,0.1);
 
     //Color for the inside of the hole
     vec4 innerColor = vec4(brownian.rgb*bBox*rotatedBox(cPos,timeFactor),brownian.a);
 
     //Color for the outside of the hole
-    vec4 outerColor = texColor*ringInterval(cPos,vec2(1.0,0.5),timeFactor);
+    vec4 outerColor = texColor*ringInterval(cPos,vec2(1.0,0.75),timeFactor*2.0);
 
     //Sets the final color of the fragment
     gl_FragColor = makeHole(cPos,radii,innerColor,outerColor);

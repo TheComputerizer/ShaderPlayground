@@ -22,6 +22,7 @@ public class SkyShader extends Shader {
         addUniform(new UniformFloat("radius",this::getRadius));
         addUniform(new UniformFloat("outlineThickness",this::getOutlineThickness));
         addUniform(new UniformFloat("animationScale",this::getAnimationScale));
+        addUniform(new UniformFloat("crackScale",this::getAnimationScale));
     }
 
     public float getTime(float partialTicks) {
@@ -47,6 +48,10 @@ public class SkyShader extends Shader {
 
     public float getAnimationScale(float partialTicks) {
         return 3f;
+    }
+
+    public float getCrackScale(float partialTicks) {
+        return 0.1f*getUVScale(partialTicks);
     }
 
     @Override
