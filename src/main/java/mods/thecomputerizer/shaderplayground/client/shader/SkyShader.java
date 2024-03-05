@@ -22,7 +22,7 @@ public class SkyShader extends Shader {
         addUniform(new UniformFloat("radius",this::getRadius));
         addUniform(new UniformFloat("outlineThickness",this::getOutlineThickness));
         addUniform(new UniformFloat("animationScale",this::getAnimationScale));
-        addUniform(new UniformFloat("crackScale",this::getAnimationScale));
+        addUniform(new UniformFloat("crackScale",this::getCrackScale));
     }
 
     public float getTime(float partialTicks) {
