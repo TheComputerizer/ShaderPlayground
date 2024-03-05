@@ -47,51 +47,54 @@ vec2 getNormalizedPosition() {
 /*
  * Gets a pseudo-random float from 0-1 using the input vector as a seed
 */
-float random(vec2 co) {
-    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+float random(vec2 seed) {
+    return fract(sin(dot(seed.xy,vec2(12.9898,78.233)))*43758.5453);
 }
 
 /*
  * Noise function from ChatGPT
  */
-float noise(vec2 P) {
-    vec2 Pi = floor(P);
-    vec2 Pf = fract(P);
-    vec2 w = Pf * Pf * (3.0 - 2.0 * Pf);
+float noise(vec2 seed) {
+    vec2 seedFloor = floor(seed);
+    vec2 seedFract = fract(seed);
+    vec2 w = seedFract*seedFract*(3.0-2.0*seedFract);
 
-    vec2 n00 = vec2(random(Pi), random(Pi + vec2(1.0, 0.0)));
-    vec2 n10 = vec2(random(Pi + vec2(1.0, 0.0)), random(Pi + vec2(1.0, 1.0)));
-    vec2 n01 = vec2(random(Pi + vec2(0.0, 1.0)), random(Pi + vec2(1.0, 1.0)));
-    vec2 n11 = vec2(random(Pi + vec2(1.0, 1.0)));
+    //(0,0) -> (1,0)
+    vec2 bottom = vec2(random(seedFloor),random(seedFloor+vec2(1.0,0.0)));
+    //(1,0) -> (1,1)
+    vec2 right = vec2(random(seedFloor+vec2(1.0,0.0)),random(seedFloor+vec2(1.0,1.0)));
+    //(0,1) -> (1,1)
+    vec2 top = vec2(random(seedFloor+vec2(0.0,1.0)),random(seedFloor+vec2(1.0,1.0)));
+    //(0,0) -> (0,1)
+    vec2 left = vec2(random(seedFloor),random(seedFloor+vec2(0.0,1.0)));
 
-    vec2 n_interp0 = mix(n00, n10, w.x);
-    vec2 n_interp1 = mix(n01, n11, w.x);
-    return mix(n_interp0.y, n_interp1.y, w.y);
+    vec2 bottomRight = mix(bottom,right,w.x);
+    vec2 topLeft = mix(top,left,w.x);
+    return mix(bottomRight.y,topLeft.y,w.y);
 }
 
 /*
  * Assume v.x is larger than v.y
  */
-vec2 normalizeTo(vec2 v, float max) {
-    return vec2(max,max*(v.y/v.x));
+vec2 normalizeTo(vec2 vec, float max) {
+    return vec2(max,max*(vec.y/ vec.x));
 }
 
 /*
  * Fractal brownian motion function modified from ChatGPT
  */
-float fbm(vec2 p) {
+float fbm(vec2 seed) {
     float total = 0.0;
     float frequency = 1.0;
     float amplitude = 1.0;
     float lacunarity = 2.0;
     float gain = 0.5;
     int octaves = 7;
-
-    for (int i = 0; i < octaves; i++) {
-        total += noise(p * frequency) * amplitude;
-        frequency *= (lacunarity-(0.2*i));
-        amplitude *= gain;
-        p *= 2.0; // directional bias
+    for(int i=0; i<octaves; i++) {
+        total+=noise(seed*frequency)*amplitude;
+        frequency*=(lacunarity-(0.2*i));
+        amplitude*=gain;
+        seed*=2.0; // directional bias
     }
     return total;
 }
@@ -101,15 +104,15 @@ float fbm(vec2 p) {
  */
 vec4 crack(vec2 uv, float timeFactor, vec4 bgColor, vec4 crackColor) {
     float crackIntensity = 0.0;
-    vec2 noiseOffset = vec2(0.0,0.1); // Time-based offset to animate the noise
-    float scale = 50.0; // Adjust this scale to control the size of the cracks
+    vec2 noiseOffset = vec2(0.0,0.1*timeFactor*0.01); // Time-based offset to animate the noise
+    float scale = 20.0; // Adjust this scale to control the size of the cracks
     float threshold = 0.8; // Threshold to control crack visibility
-    float randomness = 0.2; // Introduce some randomness in crack intensity
+    float randomness = 0.3; // Introduce some randomness in crack intensity
 
-    float n = fbm((uv + noiseOffset) * scale);
+    float brownianFactor = fbm((uv+noiseOffset)*scale);
 
     // Apply randomness to the crack intensity
-    crackIntensity = n+(random(uv)-0.5)*randomness;
+    crackIntensity = brownianFactor+(random(uv)-0.5)*randomness;
 
     // Apply threshold to emphasize cracks
     if(crackIntensity<threshold) crackIntensity = 0.0;
@@ -135,8 +138,9 @@ void main() {
     //Scaled time factor to adjust the animation speed
     float timeFactor = time*timeScale;
 
+    //calculated color of the crack
     vec4 finalColor = crack(cPos,timeFactor,texColor,vec4(0.0,0.0,0.0,1.0));
 
-    //Sets the final color of the fragment
+    //Sets the color of the fragment
     gl_FragColor = finalColor;
 }
